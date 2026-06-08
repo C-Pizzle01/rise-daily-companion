@@ -26,7 +26,7 @@ function Vitals({ ns, streak }: { ns: number | null; streak: number }) {
   const items = [
     { label: "NS SCORE", value: ns == null ? "—" : String(ns) },
     { label: "STREAK", value: String(streak) },
-    { label: "STATUS", value: status },
+    { label: "OPERATOR STATUS", value: status },
   ];
   return (
     <div
@@ -59,10 +59,10 @@ function Vitals({ ns, streak }: { ns: number | null; streak: number }) {
           <div
             style={{
               fontFamily: MONO,
-              fontSize: it.label === "STATUS" ? 13 : 22,
+              fontSize: it.label === "OPERATOR STATUS" ? 13 : 22,
               color: GOLD,
               fontWeight: 700,
-              letterSpacing: it.label === "STATUS" ? "1px" : "0",
+              letterSpacing: it.label === "OPERATOR STATUS" ? "1px" : "0",
             }}
           >
             {it.value}
