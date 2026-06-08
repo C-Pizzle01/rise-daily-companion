@@ -15,6 +15,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppProtocolRouteImport } from './routes/app.protocol'
+import { Route as AppProgressRouteImport } from './routes/app.progress'
 
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
@@ -46,12 +47,18 @@ const AppProtocolRoute = AppProtocolRouteImport.update({
   path: '/protocol',
   getParentRoute: () => AppRoute,
 } as any)
+const AppProgressRoute = AppProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
+  '/app/progress': typeof AppProgressRoute
   '/app/protocol': typeof AppProtocolRoute
   '/app/': typeof AppIndexRoute
 }
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
+  '/app/progress': typeof AppProgressRoute
   '/app/protocol': typeof AppProtocolRoute
   '/app': typeof AppIndexRoute
 }
@@ -68,20 +76,35 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
+  '/app/progress': typeof AppProgressRoute
   '/app/protocol': typeof AppProtocolRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/login' | '/onboarding' | '/app/protocol' | '/app/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/login'
+    | '/onboarding'
+    | '/app/progress'
+    | '/app/protocol'
+    | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/onboarding' | '/app/protocol' | '/app'
+  to:
+    | '/'
+    | '/login'
+    | '/onboarding'
+    | '/app/progress'
+    | '/app/protocol'
+    | '/app'
   id:
     | '__root__'
     | '/'
     | '/app'
     | '/login'
     | '/onboarding'
+    | '/app/progress'
     | '/app/protocol'
     | '/app/'
   fileRoutesById: FileRoutesById
@@ -137,15 +160,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProtocolRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/progress': {
+      id: '/app/progress'
+      path: '/progress'
+      fullPath: '/app/progress'
+      preLoaderRoute: typeof AppProgressRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppProgressRoute: typeof AppProgressRoute
   AppProtocolRoute: typeof AppProtocolRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppProgressRoute: AppProgressRoute,
   AppProtocolRoute: AppProtocolRoute,
   AppIndexRoute: AppIndexRoute,
 }
