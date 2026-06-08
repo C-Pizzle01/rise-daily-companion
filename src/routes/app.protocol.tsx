@@ -55,7 +55,7 @@ function ProtocolPage() {
           marginBottom: 24,
         }}
       >
-        THE PROTOCOL
+        MISSION BRIEF
       </h1>
 
       <div className="flex flex-col gap-3">
@@ -68,17 +68,20 @@ function ProtocolPage() {
               key={day}
               type="button"
               disabled={locked}
-              className="text-left w-full flex items-start gap-4 p-4"
+              className={`relative text-left w-full flex items-start gap-4 p-4 ${
+                locked ? "rd-redact" : ""
+              } ${isCurrent ? "rd-active-pulse" : ""}`}
               style={{
                 backgroundColor: "#2F3E46",
                 border: isCurrent
                   ? `1px solid ${GOLD}`
                   : "1px solid rgba(255,255,255,0.06)",
                 borderRadius: 3,
-                opacity: locked ? 0.4 : 1,
+                opacity: locked ? 0.55 : 1,
                 cursor: locked ? "not-allowed" : "pointer",
               }}
             >
+              {locked && <span className="rd-stamp-locked">LOCKED</span>}
               <div
                 style={{
                   fontFamily: MONO,

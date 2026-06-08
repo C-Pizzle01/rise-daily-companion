@@ -157,6 +157,83 @@
   }
 }
 
+/* Topographic contour background — fixed, sits behind all content */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: #0F2F3A;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'><g fill='none' stroke='%23F4C542' stroke-opacity='0.5' stroke-width='1'><path d='M-50 300 Q 80 220 200 270 T 420 240 T 660 290'/><path d='M-50 340 Q 90 260 210 310 T 430 280 T 660 330'/><path d='M-50 380 Q 100 300 220 350 T 440 320 T 660 370'/><path d='M-50 420 Q 110 340 230 390 T 450 360 T 660 410'/><path d='M-50 220 Q 70 140 200 190 T 420 160 T 660 210'/><path d='M-50 180 Q 60 100 190 150 T 410 120 T 660 170'/><ellipse cx='150' cy='450' rx='180' ry='80'/><ellipse cx='150' cy='450' rx='130' ry='55'/><ellipse cx='150' cy='450' rx='80' ry='32'/><ellipse cx='460' cy='110' rx='160' ry='70'/><ellipse cx='460' cy='110' rx='110' ry='46'/><ellipse cx='460' cy='110' rx='60' ry='24'/></g></svg>");
+  background-size: 600px 600px;
+  background-repeat: repeat;
+  opacity: 0.06;
+}
+#root, body > * { position: relative; z-index: 1; }
+
+/* Decorative map coordinates */
+.rd-coords {
+  position: fixed;
+  left: 10px;
+  bottom: 76px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: #F4C542;
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Redaction bars on locked protocol cards */
+.rd-redact {
+  position: relative;
+}
+.rd-redact::before,
+.rd-redact::after {
+  content: "";
+  position: absolute;
+  background-color: #0a1a22;
+  opacity: 0.7;
+  pointer-events: none;
+}
+.rd-redact::before {
+  left: 64px; right: 40px;
+  top: 22px;
+  height: 10px;
+}
+.rd-redact::after {
+  left: 64px; right: 80px;
+  top: 38px;
+  height: 10px;
+}
+
+/* LOCKED stamp */
+.rd-stamp-locked {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  color: #dc2626;
+  border: 1px solid #dc2626;
+  padding: 2px 4px;
+  transform: rotate(-12deg);
+  letter-spacing: 1px;
+  background: rgba(220,38,38,0.05);
+}
+
+/* Active day tactical pulse */
+@keyframes rd-active-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(244,197,66,0.25); }
+  50%      { box-shadow: 0 0 10px 1px rgba(244,197,66,0.55); }
+}
+.rd-active-pulse {
+  animation: rd-active-pulse 2s ease-in-out infinite;
+}
+
 /* Rise Daily utility classes */
 .rd-mono {
   font-family: "Courier New", Courier, monospace;
