@@ -41,6 +41,8 @@ function AppLayout() {
         <Outlet />
       </main>
 
+      <div className="rd-coords">28.N // RCP-01</div>
+
       <nav
         className="fixed bottom-0 left-0 right-0 flex"
         style={{

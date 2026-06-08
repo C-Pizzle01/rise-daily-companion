@@ -497,6 +497,19 @@ function Done({
         Day {dayNumber} locked in.
       </h1>
 
+      <div
+        style={{
+          fontFamily: MONO,
+          fontSize: 11,
+          letterSpacing: "2px",
+          color: GOLD,
+          marginTop: -20,
+          marginBottom: 32,
+        }}
+      >
+        MISSION COMPLETE — DAY {dayNumber} OF {total}
+      </div>
+
       <div className="relative mx-auto mb-10" style={{ width: 140, height: 140 }}>
         <svg width={140} height={140} viewBox="0 0 140 140">
           <circle
