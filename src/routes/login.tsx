@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
+import logoAsset from "@/assets/path-to-rise-logo.png.asset.json";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -40,6 +41,12 @@ function LoginPage() {
       <div className="w-full max-w-md">
         <div className="rd-radial-gold p-8 sm:p-10" style={{ borderRadius: 4, border: "1px solid rgba(255,255,255,0.04)" }}>
           <div className="text-center mb-8">
+            <img
+              src={logoAsset.url}
+              alt="Path to Rise"
+              className="mx-auto mb-4"
+              style={{ height: 80, width: "auto", mixBlendMode: "screen" }}
+            />
             <div
               className="rd-mono"
               style={{ color: "#F4C542", letterSpacing: "6px", fontSize: 18, fontWeight: 700 }}
