@@ -98,14 +98,17 @@ function CheckinPage() {
     const today = submittedAt.slice(0, 10);
 
     try {
-      const { error: ciErr } = await supabase.from("daily_checkins").insert({
-        user_id: user.id,
-        day_number: dayNumber,
-        q1_completed: q1,
-        q2_nervous_system: q2,
-        q3_reflection: q3 || null,
-        submitted_at: submittedAt,
-      });
+      const { error: ciErr } = await supabase.from("daily_checkins").upsert(
+        {
+          user_id: user.id,
+          day_number: dayNumber,
+          q1_completed: q1,
+          q2_nervous_system: q2,
+          q3_reflection: q3 || null,
+          submitted_at: submittedAt,
+        },
+        { onConflict: "user_id,day_number" },
+      );
       if (ciErr) throw ciErr;
 
       // Update user_progress: increment counters
