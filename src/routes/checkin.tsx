@@ -125,25 +125,29 @@ function CheckinPage() {
         { onConflict: "user_id" },
       );
 
-      // Fire webhook (don't block on failure)
-      const firstName =
-        (user.user_metadata?.first_name as string | undefined) ||
-        (user.user_metadata?.full_name as string | undefined)?.split(" ")[0] ||
-        profile?.department ||
-        "";
-      fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          first_name: firstName,
-          email: user.email,
-          day_number: dayNumber,
-          q1_completed: q1,
-          q2_nervous_system: q2,
-          q3_reflection: q3 || null,
-          submitted_at: submittedAt,
-        }),
-      }).catch(() => {});
+      // Fire webhook — best-effort, never block
+      try {
+        const firstName =
+          (user.user_metadata?.first_name as string | undefined) ||
+          (user.user_metadata?.full_name as string | undefined)?.split(" ")[0] ||
+          profile?.department ||
+          "";
+        fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            first_name: firstName,
+            email: user.email,
+            day_number: dayNumber,
+            q1_completed: q1,
+            q2_nervous_system: q2,
+            q3_reflection: q3 || null,
+            submitted_at: submittedAt,
+          }),
+        }).catch(() => {});
+      } catch {
+        // silent fail — webhook is best-effort
+      }
 
       setStep(3);
     } catch (e: unknown) {
