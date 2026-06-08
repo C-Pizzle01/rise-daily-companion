@@ -4,6 +4,18 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --color-rd-bg: #0F2F3A;
+  --color-rd-surface: #2F3E46;
+  --color-rd-gold: #F4C542;
+  --color-rd-text: #EAE3D9;
+  --color-rd-muted: #6F8F9E;
+  --color-rd-gold-fill: rgba(244, 197, 66, 0.12);
+  --color-rd-gold-border: rgba(244, 197, 66, 0.25);
+  --font-serif-display: Georgia, "Times New Roman", serif;
+  --font-mono-rd: "Courier New", Courier, monospace;
+}
+
 /*
  * Design system definition.
  *
