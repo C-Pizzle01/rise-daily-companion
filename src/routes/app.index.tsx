@@ -1,43 +1,127 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/app/")({
   component: TodayPage,
 });
 
+const MONO = "'Courier New', Courier, monospace";
+const SERIF = "Georgia, serif";
+const GOLD = "#F4C542";
+const TEXT = "#EAE3D9";
+const MUTED = "#6F8F9E";
+
 function TodayPage() {
-  const { profile } = useAuth();
-  const today = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  });
+  const today = new Date()
+    .toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "2-digit",
+    })
+    .toUpperCase()
+    .replace(/,/g, "");
 
   return (
-    <div className="px-5 pt-10 max-w-xl mx-auto">
-      <div className="rd-label mb-2" style={{ color: "#6F8F9E" }}>
-        {today}
-      </div>
-      <h1 className="rd-serif text-4xl mb-1" style={{ color: "#EAE3D9" }}>
-        Today.
-      </h1>
-      <p className="rd-serif italic mb-8" style={{ color: "#6F8F9E" }}>
-        Show up. That's the work.
-      </p>
-
-      <div className="rd-card rd-radial-gold p-6" style={{ borderRadius: 4 }}>
-        <div
-          className="rd-mono mb-2"
-          style={{ color: "#F4C542", fontSize: 14, letterSpacing: "3px" }}
+    <div>
+      <header
+        className="sticky top-0 z-10 flex items-center justify-between px-5 py-4"
+        style={{
+          backgroundColor: "#1B262C",
+          borderBottom: "1px solid rgba(255,255,255,0.04)",
+        }}
+      >
+        <span
+          style={{
+            fontFamily: MONO,
+            fontSize: 11,
+            letterSpacing: "3px",
+            color: GOLD,
+          }}
         >
-          DAY 01 / 28
+          RISE DAILY
+        </span>
+        <span
+          style={{
+            fontFamily: MONO,
+            fontSize: 11,
+            letterSpacing: "2px",
+            color: MUTED,
+          }}
+        >
+          {today}
+        </span>
+      </header>
+
+      <div className="px-5 pt-6 pb-8 max-w-xl mx-auto">
+        <div
+          className="rd-radial-gold p-6"
+          style={{
+            border: "1px solid rgba(244,197,66,0.25)",
+            borderRadius: 4,
+            backgroundColor: "#2F3E46",
+          }}
+        >
+          <div
+            style={{
+              fontFamily: MONO,
+              fontSize: 11,
+              letterSpacing: "3px",
+              color: GOLD,
+              marginBottom: 14,
+            }}
+          >
+            DAY 1 OF 28
+          </div>
+          <h2
+            style={{
+              fontFamily: SERIF,
+              fontSize: 28,
+              color: TEXT,
+              lineHeight: 1.2,
+              marginBottom: 12,
+            }}
+          >
+            Welcome to the Protocol
+          </h2>
+          <p
+            style={{
+              fontSize: 16,
+              color: MUTED,
+              lineHeight: 1.5,
+              marginBottom: 22,
+            }}
+          >
+            Your 28-day nervous system conditioning program begins today.
+          </p>
+          <button
+            className="w-full"
+            style={{
+              fontFamily: MONO,
+              fontSize: 12,
+              letterSpacing: "2px",
+              color: GOLD,
+              border: `1px solid ${GOLD}`,
+              backgroundColor: "transparent",
+              padding: "14px 0",
+              borderRadius: 3,
+              cursor: "pointer",
+            }}
+          >
+            CHECK IN TODAY →
+          </button>
         </div>
-        <h2 className="rd-serif text-2xl mb-3" style={{ color: "#EAE3D9" }}>
-          Begin the protocol.
-        </h2>
-        <p style={{ color: "#6F8F9E", lineHeight: 1.6, fontSize: 14 }}>
-          Welcome, {profile?.department || "operator"}. Your conditioning
-          sequence will appear here each morning.
+
+        <p
+          className="text-center mt-8"
+          style={{
+            fontFamily: MONO,
+            fontSize: 12,
+            color: MUTED,
+            lineHeight: 1.6,
+          }}
+        >
+          The protocol doesn't care how you feel.
+          <br />
+          It only cares that you show up.
         </p>
       </div>
     </div>
