@@ -46,10 +46,10 @@ function OnboardingPage() {
       setSaving(false);
       return;
     }
-    const { error: prErr } = await supabase.from("user_progress").upsert({
-      user_id: user.id,
-      current_day: 1,
-    });
+    const { error: prErr } = await supabase.from("user_progress").upsert(
+      { user_id: user.id, current_day: 1 },
+      { onConflict: "user_id" },
+    );
     if (prErr) {
       setError(prErr.message);
       setSaving(false);
