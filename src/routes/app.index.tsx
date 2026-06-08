@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/app/")({
   component: TodayPage,
@@ -11,8 +14,194 @@ const GOLD = "#F4C542";
 const TEXT = "#EAE3D9";
 const MUTED = "#6F8F9E";
 
+function statusFromScore(score: number | null): string {
+  if (score == null) return "BASELINE";
+  if (score >= 7) return "REGULATED";
+  if (score >= 4) return "CALIBRATING";
+  return "DYSREGULATED";
+}
+
+function Vitals({ ns, streak }: { ns: number | null; streak: number }) {
+  const status = statusFromScore(ns);
+  const items = [
+    { label: "NS SCORE", value: ns == null ? "—" : String(ns) },
+    { label: "STREAK", value: String(streak) },
+    { label: "STATUS", value: status },
+  ];
+  return (
+    <div
+      className="grid grid-cols-3"
+      style={{
+        backgroundColor: "#2F3E46",
+        border: "1px solid rgba(244,197,66,0.15)",
+        borderRadius: 3,
+      }}
+    >
+      {items.map((it, i) => (
+        <div
+          key={it.label}
+          className="px-3 py-3 text-center"
+          style={{
+            borderLeft: i === 0 ? "none" : "1px solid rgba(255,255,255,0.05)",
+          }}
+        >
+          <div
+            style={{
+              fontFamily: MONO,
+              fontSize: 9,
+              letterSpacing: "2px",
+              color: MUTED,
+              marginBottom: 6,
+            }}
+          >
+            {it.label}
+          </div>
+          <div
+            style={{
+              fontFamily: MONO,
+              fontSize: it.label === "STATUS" ? 13 : 22,
+              color: GOLD,
+              fontWeight: 700,
+              letterSpacing: it.label === "STATUS" ? "1px" : "0",
+            }}
+          >
+            {it.value}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Waveform() {
+  return (
+    <svg
+      viewBox="0 0 400 60"
+      className="w-full"
+      style={{ height: 50, marginTop: 14, marginBottom: 6 }}
+      preserveAspectRatio="none"
+    >
+      <path
+        className="rd-wave"
+        d="M0,30 Q25,30 35,30 T70,30 Q85,30 95,10 T120,30 Q135,30 145,30 T180,30 Q195,30 205,50 T230,30 Q245,30 255,30 T290,30 Q305,30 315,10 T340,30 Q355,30 365,30 T400,30"
+        fill="none"
+        stroke={GOLD}
+        strokeOpacity={0.4}
+        strokeWidth={1.5}
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function DayRing({ day, total = 28 }: { day: number; total?: number }) {
+  const size = 140;
+  const stroke = 6;
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const pct = Math.min(1, Math.max(0, day / total));
+  const offset = c * (1 - pct);
+  return (
+    <div className="relative mx-auto" style={{ width: size, height: size }}>
+      <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          stroke={MUTED}
+          strokeOpacity={0.2}
+          strokeWidth={stroke}
+          fill="none"
+        />
+        <circle
+          className="rd-ring"
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          stroke={GOLD}
+          strokeWidth={stroke}
+          fill="none"
+          strokeLinecap="round"
+          strokeDasharray={c}
+          style={
+            {
+              "--rd-ring-start": `${c}px`,
+              "--rd-ring-end": `${offset}px`,
+              strokeDashoffset: offset,
+            } as React.CSSProperties
+          }
+        />
+      </svg>
+      <div
+        className="absolute inset-0 flex flex-col items-center justify-center"
+      >
+        <div
+          style={{
+            fontFamily: MONO,
+            fontSize: 10,
+            letterSpacing: "2px",
+            color: MUTED,
+          }}
+        >
+          DAY
+        </div>
+        <div
+          style={{
+            fontFamily: SERIF,
+            fontSize: 44,
+            color: TEXT,
+            lineHeight: 1,
+          }}
+        >
+          {String(day).padStart(2, "0")}
+        </div>
+        <div
+          style={{
+            fontFamily: MONO,
+            fontSize: 10,
+            letterSpacing: "2px",
+            color: MUTED,
+          }}
+        >
+          OF {total}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TodayPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [ns, setNs] = useState<number | null>(null);
+  const [streak, setStreak] = useState<number>(0);
+  const [currentDay, setCurrentDay] = useState<number>(1);
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const { data: prog } = await supabase
+        .from("user_progress")
+        .select("current_day, current_streak")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (prog) {
+        setCurrentDay(prog.current_day ?? 1);
+        setStreak(prog.current_streak ?? 0);
+      }
+      const { data: last } = await supabase
+        .from("daily_checkins")
+        .select("q2_nervous_system")
+        .eq("user_id", user.id)
+        .order("submitted_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (last && last.q2_nervous_system != null) {
+        setNs(Number(last.q2_nervous_system));
+      }
+    })();
+  }, [user]);
+
   const today = new Date()
     .toLocaleDateString("en-US", {
       weekday: "short",
@@ -54,12 +243,17 @@ function TodayPage() {
       </header>
 
       <div className="px-5 pt-6 pb-8 max-w-xl mx-auto">
+        <Vitals ns={ns} streak={streak} />
+        <Waveform />
+
+        <div className="my-6">
+          <DayRing day={currentDay} />
+        </div>
+
         <div
-          className="rd-radial-gold p-6"
+          className="rd-radial-gold rd-surface-grad p-6"
           style={{
-            border: "1px solid rgba(244,197,66,0.25)",
             borderRadius: 4,
-            backgroundColor: "#2F3E46",
           }}
         >
           <div
@@ -71,7 +265,7 @@ function TodayPage() {
               marginBottom: 14,
             }}
           >
-            DAY 1 OF 28
+            DAY {currentDay} OF 28
           </div>
           <h2
             style={{
