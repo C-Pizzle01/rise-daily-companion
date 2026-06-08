@@ -4,6 +4,18 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --color-rd-bg: #0F2F3A;
+  --color-rd-surface: #2F3E46;
+  --color-rd-gold: #F4C542;
+  --color-rd-text: #EAE3D9;
+  --color-rd-muted: #6F8F9E;
+  --color-rd-gold-fill: rgba(244, 197, 66, 0.12);
+  --color-rd-gold-border: rgba(244, 197, 66, 0.25);
+  --font-serif-display: Georgia, "Times New Roman", serif;
+  --font-mono-rd: "Courier New", Courier, monospace;
+}
+
 /*
  * Design system definition.
  *
@@ -138,7 +150,69 @@
   }
 
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-color: #0F2F3A;
+    color: #EAE3D9;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
   }
+}
+
+/* Rise Daily utility classes */
+.rd-mono {
+  font-family: "Courier New", Courier, monospace;
+}
+.rd-serif {
+  font-family: Georgia, "Times New Roman", serif;
+}
+.rd-label {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.rd-card {
+  background-color: #2F3E46;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+.rd-input {
+  background-color: #2F3E46;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #EAE3D9;
+  font-family: system-ui, sans-serif;
+  padding: 12px 14px;
+  border-radius: 3px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.rd-input:focus {
+  border-color: rgba(244, 197, 66, 0.45);
+}
+.rd-input::placeholder {
+  color: #6F8F9E;
+}
+.rd-btn-gold {
+  border: 1px solid #F4C542;
+  color: #F4C542;
+  background: transparent;
+  font-family: "Courier New", Courier, monospace;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 12px 20px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.18s ease;
+  font-size: 13px;
+}
+.rd-btn-gold:hover:not(:disabled) {
+  background-color: rgba(244, 197, 66, 0.12);
+}
+.rd-btn-gold:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.rd-radial-gold {
+  background:
+    radial-gradient(ellipse at top, rgba(244, 197, 66, 0.10), transparent 60%),
+    #2F3E46;
 }
