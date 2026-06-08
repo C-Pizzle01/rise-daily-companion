@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/app/")({
   component: TodayPage,
@@ -11,6 +12,7 @@ const TEXT = "#EAE3D9";
 const MUTED = "#6F8F9E";
 
 function TodayPage() {
+  const navigate = useNavigate();
   const today = new Date()
     .toLocaleDateString("en-US", {
       weekday: "short",
@@ -94,6 +96,7 @@ function TodayPage() {
           </p>
           <button
             className="w-full"
+            onClick={() => navigate({ to: "/checkin" })}
             style={{
               fontFamily: MONO,
               fontSize: 12,
