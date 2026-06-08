@@ -216,3 +216,28 @@
     radial-gradient(ellipse at top, rgba(244, 197, 66, 0.10), transparent 60%),
     #2F3E46;
 }
+
+/* Tactical surface gradient */
+.rd-surface-grad {
+  background: linear-gradient(160deg, #0F2F3A 0%, #1a3a47 100%);
+  border: 1px solid rgba(244, 197, 66, 0.15);
+}
+
+/* Pulsing waveform */
+@keyframes rd-pulse-wave {
+  0%, 100% { opacity: 0.25; transform: scaleY(1); }
+  50%      { opacity: 0.55; transform: scaleY(1.15); }
+}
+.rd-wave {
+  animation: rd-pulse-wave 3s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Day ring fill animation */
+@keyframes rd-ring-fill {
+  from { stroke-dashoffset: var(--rd-ring-start); }
+  to   { stroke-dashoffset: var(--rd-ring-end); }
+}
+.rd-ring {
+  animation: rd-ring-fill 1s ease-in forwards;
+}
