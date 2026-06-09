@@ -542,3 +542,182 @@ function Done({
     </div>
   );
 }
+
+function ArcGauge({
+  value,
+  onChange,
+}: {
+  value: number | null;
+  onChange: (n: number) => void;
+}) {
+  const W = 320;
+  const H = 180;
+  const cx = W / 2;
+  const cy = 160;
+  const r = 130;
+  const svgRef = useRef<SVGSVGElement | null>(null);
+
+  const v = value ?? 1;
+  const color =
+    v <= 3 ? DANGER : v <= 6 ? AMBER : GOLD;
+
+  // angle: value 1 -> 180deg (left), value 10 -> 0deg (right)
+  const valueToAngle = (n: number) =>
+    Math.PI - ((n - 1) / 9) * Math.PI;
+  const angle = valueToAngle(v);
+  const dotX = cx + r * Math.cos(angle);
+  const dotY = cy - r * Math.sin(angle);
+
+  // background arc path (semicircle)
+  const bgPath = `M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`;
+  // filled arc from left (180deg) to current angle
+  const startX = cx - r;
+  const startY = cy;
+  const largeArc = 0;
+  const fillPath =
+    value == null
+      ? ""
+      : `M ${startX} ${startY} A ${r} ${r} 0 ${largeArc} 1 ${dotX} ${dotY}`;
+
+  const pointFromEvent = (clientX: number, clientY: number) => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const rect = svg.getBoundingClientRect();
+    const x = ((clientX - rect.left) / rect.width) * W;
+    const y = ((clientY - rect.top) / rect.height) * H;
+    const dx = x - cx;
+    const dy = cy - y;
+    let a = Math.atan2(dy, dx);
+    if (a < 0) a = 0;
+    if (a > Math.PI) a = Math.PI;
+    const n = Math.round(((Math.PI - a) / Math.PI) * 9 + 1);
+    const clamped = Math.max(1, Math.min(10, n));
+    onChange(clamped);
+  };
+
+  const [dragging, setDragging] = useState(false);
+
+  return (
+    <div className="mb-8">
+      <svg
+        ref={svgRef}
+        viewBox={`0 0 ${W} ${H}`}
+        style={{ width: "100%", height: "auto", touchAction: "none" }}
+        onPointerDown={(e) => {
+          (e.target as Element).setPointerCapture?.(e.pointerId);
+          setDragging(true);
+          pointFromEvent(e.clientX, e.clientY);
+        }}
+        onPointerMove={(e) => {
+          if (!dragging) return;
+          pointFromEvent(e.clientX, e.clientY);
+        }}
+        onPointerUp={() => setDragging(false)}
+        onPointerCancel={() => setDragging(false)}
+      >
+        <path
+          d={bgPath}
+          fill="none"
+          stroke="rgba(255,255,255,0.08)"
+          strokeWidth={10}
+          strokeLinecap="round"
+        />
+        {value != null && (
+          <path
+            d={fillPath}
+            fill="none"
+            stroke={color}
+            strokeWidth={10}
+            strokeLinecap="round"
+          />
+        )}
+        {value != null && (
+          <circle
+            cx={dotX}
+            cy={dotY}
+            r={10}
+            fill={color}
+            stroke="#0F2F3A"
+            strokeWidth={3}
+            style={{ cursor: "grab" }}
+          />
+        )}
+        <text
+          x={cx - r}
+          y={cy + 22}
+          fill={DANGER}
+          fontFamily={MONO}
+          fontSize={9}
+          letterSpacing="1.5"
+          textAnchor="start"
+        >
+          DYSREGULATED
+        </text>
+        <text
+          x={cx + r}
+          y={cy + 22}
+          fill={GOLD}
+          fontFamily={MONO}
+          fontSize={9}
+          letterSpacing="1.5"
+          textAnchor="end"
+        >
+          REGULATED
+        </text>
+      </svg>
+      <div
+        className="text-center"
+        style={{
+          fontFamily: MONO,
+          fontSize: 64,
+          fontWeight: 700,
+          lineHeight: 1,
+          color: value == null ? "rgba(244,197,66,0.2)" : color,
+          marginTop: -10,
+        }}
+      >
+        {value ?? "—"}
+      </div>
+      <div
+        className="text-center mt-3"
+        style={{
+          fontFamily: MONO,
+          fontSize: 10,
+          letterSpacing: "2px",
+          color: MUTED,
+        }}
+      >
+        DRAG OR TAP THE ARC
+      </div>
+    </div>
+  );
+}
+
+function Celebration() {
+  const particles = Array.from({ length: 14 });
+  return (
+    <>
+      <div className="rd-flash" />
+      <div className="rd-burst">
+        {particles.map((_, i) => {
+          const angle = (i / particles.length) * Math.PI * 2;
+          const dist = 140 + Math.random() * 80;
+          const tx = Math.cos(angle) * dist;
+          const ty = Math.sin(angle) * dist;
+          return (
+            <span
+              key={i}
+              className="rd-particle"
+              style={
+                {
+                  "--tx": `${tx}px`,
+                  "--ty": `${ty}px`,
+                } as React.CSSProperties
+              }
+            />
+          );
+        })}
+      </div>
+    </>
+  );
+}
