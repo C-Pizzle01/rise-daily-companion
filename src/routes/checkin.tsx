@@ -243,6 +243,24 @@ function Screen1({
         Be honest. This is just for you.
       </p>
 
+      <div className="relative">
+        <svg
+          className="rd-breathe"
+          viewBox="0 0 200 200"
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%,-50%)",
+            width: 320,
+            height: 320,
+            pointerEvents: "none",
+            zIndex: 0,
+          }}
+        >
+          <circle cx={100} cy={100} r={90} fill={GOLD} opacity={0.6} />
+        </svg>
+        <div style={{ position: "relative", zIndex: 1 }}>
       <button
         onClick={() => onSelect(true)}
         className="w-full text-left p-5 mb-3 relative"
@@ -278,6 +296,8 @@ function Screen1({
       >
         NOT TODAY
       </button>
+        </div>
+      </div>
 
       {q1 === false && (
         <div className="mt-8">
