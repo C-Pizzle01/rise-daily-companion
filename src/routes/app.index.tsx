@@ -183,18 +183,18 @@ function TodayPage() {
     (async () => {
       const { data: prog } = await supabase
         .from("user_progress")
-        .select("current_day, current_streak")
+        .select("current_day, streak")
         .eq("user_id", user.id)
         .maybeSingle();
-      if (prog) {
-        setCurrentDay(prog.current_day ?? 1);
-        setStreak(prog.current_streak ?? 0);
+      if (prog && prog.current_day != null) {
+        setCurrentDay(prog.current_day);
+        setStreak(prog.streak ?? 0);
       }
       const { data: last } = await supabase
         .from("daily_checkins")
-        .select("q2_nervous_system")
+        .select("q2_nervous_system, day_number")
         .eq("user_id", user.id)
-        .order("submitted_at", { ascending: false })
+        .order("day_number", { ascending: false })
         .limit(1)
         .maybeSingle();
       if (last && last.q2_nervous_system != null) {
