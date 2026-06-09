@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
+import { rankFromDay } from "@/lib/rank";
 
 export const Route = createFileRoute("/app/")({
   component: TodayPage,
@@ -25,7 +26,7 @@ function Vitals({ ns, streak }: { ns: number | null; streak: number }) {
   const status = statusFromScore(ns);
   const items = [
     { label: "NS SCORE", value: ns == null ? "—" : String(ns) },
-    { label: "STREAK", value: String(streak) },
+    { label: "STREAK", value: streak >= 3 ? `${streak} 🔥` : String(streak) },
     { label: "OPERATOR STATUS", value: status },
   ];
   return (
