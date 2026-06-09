@@ -18,6 +18,7 @@ import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppProtocolRouteImport } from './routes/app.protocol'
 import { Route as AppProgressRouteImport } from './routes/app.progress'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppCommandRouteImport } from './routes/app.command'
 
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
@@ -64,6 +65,11 @@ const AppProfileRoute = AppProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCommandRoute = AppCommandRouteImport.update({
+  id: '/command',
+  path: '/command',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/checkin': typeof CheckinRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
+  '/app/command': typeof AppCommandRoute
   '/app/profile': typeof AppProfileRoute
   '/app/progress': typeof AppProgressRoute
   '/app/protocol': typeof AppProtocolRoute
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/checkin': typeof CheckinRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
+  '/app/command': typeof AppCommandRoute
   '/app/profile': typeof AppProfileRoute
   '/app/progress': typeof AppProgressRoute
   '/app/protocol': typeof AppProtocolRoute
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/checkin': typeof CheckinRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
+  '/app/command': typeof AppCommandRoute
   '/app/profile': typeof AppProfileRoute
   '/app/progress': typeof AppProgressRoute
   '/app/protocol': typeof AppProtocolRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/checkin'
     | '/login'
     | '/onboarding'
+    | '/app/command'
     | '/app/profile'
     | '/app/progress'
     | '/app/protocol'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/checkin'
     | '/login'
     | '/onboarding'
+    | '/app/command'
     | '/app/profile'
     | '/app/progress'
     | '/app/protocol'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/checkin'
     | '/login'
     | '/onboarding'
+    | '/app/command'
     | '/app/profile'
     | '/app/progress'
     | '/app/protocol'
@@ -206,10 +218,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProfileRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/command': {
+      id: '/app/command'
+      path: '/command'
+      fullPath: '/app/command'
+      preLoaderRoute: typeof AppCommandRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppCommandRoute: typeof AppCommandRoute
   AppProfileRoute: typeof AppProfileRoute
   AppProgressRoute: typeof AppProgressRoute
   AppProtocolRoute: typeof AppProtocolRoute
@@ -217,6 +237,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppCommandRoute: AppCommandRoute,
   AppProfileRoute: AppProfileRoute,
   AppProgressRoute: AppProgressRoute,
   AppProtocolRoute: AppProtocolRoute,

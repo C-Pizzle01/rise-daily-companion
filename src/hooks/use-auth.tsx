@@ -12,6 +12,9 @@ export interface Profile {
   id: string;
   first_responder_type: string | null;
   department: string | null;
+  is_admin: boolean | null;
+  first_name: string | null;
+  last_name: string | null;
 }
 
 interface AuthCtx {
@@ -33,11 +36,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loadProfile = async (uid: string) => {
     const { data } = await supabase
       .from("profiles")
-      .select("id, first_responder_type, department")
+      .select("id, first_responder_type, department, is_admin, first_name, last_name")
       .eq("id", uid)
       .maybeSingle();
     setProfile(
-      data ?? { id: uid, first_responder_type: null, department: null },
+      (data as Profile) ?? {
+        id: uid,
+        first_responder_type: null,
+        department: null,
+        is_admin: null,
+        first_name: null,
+        last_name: null,
+      },
     );
   };
 
