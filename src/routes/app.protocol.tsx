@@ -10,6 +10,7 @@ const SERIF = "Georgia, serif";
 const GOLD = "#F4C542";
 const TEXT = "#EAE3D9";
 const MUTED = "#6F8F9E";
+const DANGER = "#dc2626";
 
 const DAYS: { title: string; description: string }[] = [
   { title: "Welcome to the Protocol", description: "Set your baseline and begin the 28-day sequence." },
@@ -63,9 +64,25 @@ function ProtocolPage() {
           const day = i + 1;
           const locked = day > currentDay;
           const isCurrent = day === currentDay;
+          const inFriction = day >= 7 && day <= 14;
           return (
+            <div key={day}>
+              {day === 7 && (
+                <div
+                  style={{
+                    fontFamily: MONO,
+                    fontSize: 9,
+                    letterSpacing: "2px",
+                    color: DANGER,
+                    opacity: 0.7,
+                    marginBottom: 6,
+                    marginTop: 4,
+                  }}
+                >
+                  ⚠ FRICTION WINDOW
+                </div>
+              )}
             <button
-              key={day}
               type="button"
               disabled={locked}
               className={`relative text-left w-full flex items-start gap-4 p-4 ${
@@ -75,7 +92,9 @@ function ProtocolPage() {
                 backgroundColor: "#2F3E46",
                 border: isCurrent
                   ? `1px solid ${GOLD}`
-                  : "1px solid rgba(255,255,255,0.06)",
+                  : inFriction
+                    ? "1px solid rgba(220,38,38,0.2)"
+                    : "1px solid rgba(255,255,255,0.06)",
                 borderRadius: 3,
                 opacity: locked ? 0.55 : 1,
                 cursor: locked ? "not-allowed" : "pointer",
@@ -113,6 +132,7 @@ function ProtocolPage() {
                 <Lock size={14} style={{ color: MUTED, marginTop: 6 }} />
               )}
             </button>
+            </div>
           );
         })}
       </div>
