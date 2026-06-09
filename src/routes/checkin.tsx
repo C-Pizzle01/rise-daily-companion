@@ -114,18 +114,25 @@ function CheckinPage() {
       );
       if (ciErr) throw ciErr;
 
-      // Update user_progress: increment counters
+      // Update user_progress: advance day, bump streak counters
       const { data: prog } = await supabase
         .from("user_progress")
-        .select("total_checkins, streak")
+        .select("total_checkins, current_streak, current_day, longest_streak")
         .eq("user_id", user.id)
         .maybeSingle();
+
+      const nextStreak = (prog?.current_streak ?? 0) + 1;
+      const nextDay = (prog?.current_day ?? 1) + 1;
+      const nextLongest = Math.max(nextStreak, prog?.longest_streak ?? 0);
 
       await supabase.from("user_progress").upsert(
         {
           user_id: user.id,
+          current_day: nextDay,
+          current_streak: nextStreak,
+          streak: nextStreak,
+          longest_streak: nextLongest,
           total_checkins: (prog?.total_checkins ?? 0) + 1,
-          streak: (prog?.streak ?? 0) + 1,
           last_checkin_date: today,
         },
         { onConflict: "user_id" },
