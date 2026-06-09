@@ -15,6 +15,8 @@ const TEXT = "#EAE3D9";
 const MUTED = "#6F8F9E";
 const SURFACE = "#2F3E46";
 const BG = "#1B262C";
+const DANGER = "#dc2626";
+const AMBER = "#f59e0b";
 
 const WEBHOOK_URL =
   "https://services.leadconnectorhq.com/hooks/vxapd3jx9Tp1B4DK8SWv/webhook-trigger/PLACEHOLDER";
@@ -79,6 +81,7 @@ function CheckinPage() {
   const [q3, setQ3] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [celebrate, setCelebrate] = useState(false);
 
   const dayNumber = 1;
 
@@ -152,7 +155,11 @@ function CheckinPage() {
         // silent fail — webhook is best-effort
       }
 
-      setStep(3);
+      setCelebrate(true);
+      setTimeout(() => {
+        setCelebrate(false);
+        setStep(3);
+      }, 600);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Submission failed";
       setError(msg);
@@ -163,6 +170,7 @@ function CheckinPage() {
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: BG }}>
+      {celebrate && <Celebration />}
       <div className="max-w-xl mx-auto px-5">
         {step < 3 && <Dots step={step} />}
 
