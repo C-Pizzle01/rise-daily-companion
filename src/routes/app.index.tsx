@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
+import { rankFromDay } from "@/lib/rank";
 
 export const Route = createFileRoute("/app/")({
   component: TodayPage,
@@ -25,7 +26,7 @@ function Vitals({ ns, streak }: { ns: number | null; streak: number }) {
   const status = statusFromScore(ns);
   const items = [
     { label: "NS SCORE", value: ns == null ? "—" : String(ns) },
-    { label: "STREAK", value: String(streak) },
+    { label: "STREAK", value: streak >= 3 ? `${streak} 🔥` : String(streak) },
     { label: "OPERATOR STATUS", value: status },
   ];
   return (
@@ -250,6 +251,36 @@ function TodayPage() {
           <DayRing day={currentDay} />
         </div>
 
+        <div className="flex flex-col items-center gap-2 mb-6">
+          <span
+            style={{
+              fontFamily: MONO,
+              fontSize: 11,
+              letterSpacing: "2px",
+              color: GOLD,
+              border: `1px solid ${GOLD}`,
+              padding: "4px 10px",
+              borderRadius: 3,
+            }}
+          >
+            // {rankFromDay(currentDay)} //
+          </span>
+          {currentDay >= 7 && currentDay <= 14 && (
+            <div
+              style={{
+                fontFamily: MONO,
+                fontSize: 11,
+                color: GOLD,
+                textAlign: "center",
+              }}
+            >
+              This is where operators are made.
+            </div>
+          )}
+        </div>
+
+        <SentinelUnlock currentDay={currentDay} />
+
         <div
           className="rd-radial-gold rd-surface-grad p-6"
           style={{
@@ -320,6 +351,68 @@ function TodayPage() {
           <br />
           It only cares that you show up.
         </p>
+      </div>
+    </div>
+  );
+}
+
+function SentinelUnlock({ currentDay }: { currentDay: number }) {
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (currentDay !== 14) return;
+    if (typeof window === "undefined") return;
+    const key = "rd-sentinel-unlocked";
+    if (window.localStorage.getItem(key)) return;
+    setOpen(true);
+    window.localStorage.setItem(key, "1");
+  }, [currentDay]);
+  if (!open) return null;
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center px-5"
+      style={{ backgroundColor: "rgba(0,0,0,0.7)" }}
+      onClick={() => setOpen(false)}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="max-w-sm w-full p-6"
+        style={{
+          backgroundColor: "#1B262C",
+          border: `1px solid ${GOLD}`,
+          borderRadius: 4,
+        }}
+      >
+        <div
+          style={{
+            fontFamily: MONO,
+            fontSize: 12,
+            letterSpacing: "3px",
+            color: GOLD,
+            marginBottom: 12,
+          }}
+        >
+          SENTINEL UNLOCKED
+        </div>
+        <p style={{ color: GOLD, fontSize: 15, lineHeight: 1.5, marginBottom: 20 }}>
+          You survived the friction window. 7 in 10 operators quit here. You didn't.
+        </p>
+        <button
+          onClick={() => setOpen(false)}
+          className="w-full"
+          style={{
+            fontFamily: MONO,
+            fontSize: 12,
+            letterSpacing: "2px",
+            color: GOLD,
+            border: `1px solid ${GOLD}`,
+            backgroundColor: "transparent",
+            padding: "12px 0",
+            borderRadius: 3,
+            cursor: "pointer",
+          }}
+        >
+          DISMISS
+        </button>
       </div>
     </div>
   );
