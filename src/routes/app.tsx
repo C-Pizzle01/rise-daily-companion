@@ -1,18 +1,25 @@
 import { createFileRoute, Outlet, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { Home, Target, TrendingUp, User } from "lucide-react";
+import { Home, Target, TrendingUp, User, LayoutGrid } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/app")({
   component: AppLayout,
 });
 
-const tabs = [
+const baseTabs = [
   { to: "/app", label: "Today", icon: Home, exact: true },
   { to: "/app/protocol", label: "Protocol", icon: Target, exact: false },
   { to: "/app/progress", label: "Progress", icon: TrendingUp, exact: false },
   { to: "/app/profile", label: "Profile", icon: User, exact: false },
 ] as const;
+
+const adminTab = {
+  to: "/app/command",
+  label: "Command",
+  icon: LayoutGrid,
+  exact: false,
+} as const;
 
 function AppLayout() {
   const { session, loading, profile } = useAuth();
@@ -34,6 +41,10 @@ function AppLayout() {
       </div>
     );
   }
+
+  const tabs = profile?.is_admin
+    ? [...baseTabs, adminTab]
+    : baseTabs;
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#0F2F3A" }}>
