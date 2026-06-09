@@ -155,11 +155,12 @@ function CheckinPage() {
         // silent fail — webhook is best-effort
       }
 
+      // Smooth 300ms fade into completion screen
       setCelebrate(true);
       setTimeout(() => {
-        setCelebrate(false);
         setStep(3);
-      }, 600);
+        setCelebrate(false);
+      }, 300);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Submission failed";
       setError(msg);
@@ -170,7 +171,18 @@ function CheckinPage() {
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: BG }}>
-      {celebrate && <Celebration />}
+      {celebrate && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: BG,
+            zIndex: 50,
+            animation: "rd-fade-in 300ms ease-out both",
+            pointerEvents: "none",
+          }}
+        />
+      )}
       <div className="max-w-xl mx-auto px-5">
         {step < 3 && <Dots step={step} />}
 
@@ -194,7 +206,9 @@ function CheckinPage() {
           />
         )}
         {step === 3 && (
-          <Done dayNumber={dayNumber} onBack={() => navigate({ to: "/app" })} />
+          <div className="rd-fade-in">
+            <Done dayNumber={dayNumber} onBack={() => navigate({ to: "/app" })} />
+          </div>
         )}
         {error && (
           <p
@@ -690,34 +704,5 @@ function ArcGauge({
         DRAG OR TAP THE ARC
       </div>
     </div>
-  );
-}
-
-function Celebration() {
-  const particles = Array.from({ length: 14 });
-  return (
-    <>
-      <div className="rd-flash" />
-      <div className="rd-burst">
-        {particles.map((_, i) => {
-          const angle = (i / particles.length) * Math.PI * 2;
-          const dist = 140 + Math.random() * 80;
-          const tx = Math.cos(angle) * dist;
-          const ty = Math.sin(angle) * dist;
-          return (
-            <span
-              key={i}
-              className="rd-particle"
-              style={
-                {
-                  "--tx": `${tx}px`,
-                  "--ty": `${ty}px`,
-                } as React.CSSProperties
-              }
-            />
-          );
-        })}
-      </div>
-    </>
   );
 }
