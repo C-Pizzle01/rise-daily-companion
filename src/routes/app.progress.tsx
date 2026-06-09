@@ -78,11 +78,10 @@ function ProgressPage() {
         .eq("user_id", user.id)
         .maybeSingle();
       if (prog) {
-        const dc = prog.total_checkins ?? 0;
         const cd = prog.current_day ?? 1;
+        const dc = Math.max(0, cd - 1);
         setDaysComplete(dc);
         setStreak(prog.current_streak ?? 0);
-        setMissed(Math.max(0, cd - 1 - dc));
         setCurrentDay(cd);
       }
       const { data: ci } = await supabase
@@ -90,11 +89,20 @@ function ProgressPage() {
         .select("day_number, q2_nervous_system")
         .eq("user_id", user.id)
         .order("day_number", { ascending: true });
-      if (ci) setCheckins(ci as any);
+      if (ci) {
+        setCheckins(ci as any);
+        const cd = (prog?.current_day ?? 1);
+        const checkedDays = new Set((ci as any[]).map((c) => c.day_number));
+        let missedCount = 0;
+        for (let d = 1; d <= cd - 1; d++) {
+          if (!checkedDays.has(d)) missedCount++;
+        }
+        setMissed(missedCount);
+      }
     })();
   }, [user]);
 
-  const remaining = Math.max(0, 28 - daysComplete);
+  const remaining = Math.max(0, 28 - Math.max(0, currentDay - 1));
   const stats = [
     { label: "DAYS COMPLETE", value: daysComplete },
     { label: "CURRENT STREAK", value: streak },
