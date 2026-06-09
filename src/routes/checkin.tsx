@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
@@ -15,6 +15,8 @@ const TEXT = "#EAE3D9";
 const MUTED = "#6F8F9E";
 const SURFACE = "#2F3E46";
 const BG = "#1B262C";
+const DANGER = "#dc2626";
+const AMBER = "#f59e0b";
 
 const WEBHOOK_URL =
   "https://services.leadconnectorhq.com/hooks/vxapd3jx9Tp1B4DK8SWv/webhook-trigger/PLACEHOLDER";
@@ -79,6 +81,7 @@ function CheckinPage() {
   const [q3, setQ3] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [celebrate, setCelebrate] = useState(false);
 
   const dayNumber = 1;
 
@@ -152,7 +155,11 @@ function CheckinPage() {
         // silent fail — webhook is best-effort
       }
 
-      setStep(3);
+      setCelebrate(true);
+      setTimeout(() => {
+        setCelebrate(false);
+        setStep(3);
+      }, 600);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Submission failed";
       setError(msg);
@@ -163,6 +170,7 @@ function CheckinPage() {
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: BG }}>
+      {celebrate && <Celebration />}
       <div className="max-w-xl mx-auto px-5">
         {step < 3 && <Dots step={step} />}
 
@@ -235,9 +243,27 @@ function Screen1({
         Be honest. This is just for you.
       </p>
 
+      <div className="relative">
+        <svg
+          className="rd-breathe"
+          viewBox="0 0 200 200"
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%,-50%)",
+            width: 320,
+            height: 320,
+            pointerEvents: "none",
+            zIndex: 0,
+          }}
+        >
+          <circle cx={100} cy={100} r={90} fill={GOLD} opacity={0.6} />
+        </svg>
+        <div style={{ position: "relative", zIndex: 1 }}>
       <button
         onClick={() => onSelect(true)}
-        className="w-full text-left p-5 mb-3"
+        className="w-full text-left p-5 mb-3 relative"
         style={{
           backgroundColor:
             q1 === true ? "rgba(244,197,66,0.12)" : "transparent",
@@ -270,6 +296,8 @@ function Screen1({
       >
         NOT TODAY
       </button>
+        </div>
+      </div>
 
       {q1 === false && (
         <div className="mt-8">
@@ -326,43 +354,7 @@ function Screen2({
         1 = completely dysregulated &nbsp;&nbsp; 10 = fully regulated
       </p>
 
-      <div
-        className="text-center"
-        style={{
-          fontFamily: SERIF,
-          fontSize: 80,
-          lineHeight: 1,
-          color: q2 ? GOLD : "rgba(244,197,66,0.15)",
-          minHeight: 96,
-          marginBottom: 24,
-        }}
-      >
-        {q2 ?? "—"}
-      </div>
-
-      <div className="grid grid-cols-5 gap-2 mb-8">
-        {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
-          <button
-            key={n}
-            onClick={() => onSelect(n)}
-            style={{
-              padding: "14px 0",
-              backgroundColor: q2 === n ? "rgba(244,197,66,0.12)" : SURFACE,
-              border:
-                q2 === n
-                  ? `1px solid ${GOLD}`
-                  : "1px solid rgba(255,255,255,0.06)",
-              color: q2 === n ? GOLD : TEXT,
-              fontFamily: MONO,
-              fontSize: 14,
-              borderRadius: 3,
-              cursor: "pointer",
-            }}
-          >
-            {n}
-          </button>
-        ))}
-      </div>
+      <ArcGauge value={q2} onChange={onSelect} />
 
       {q2 !== null && (
         <GoldButton onClick={onContinue}>CONTINUE →</GoldButton>
@@ -548,5 +540,184 @@ function Done({
 
       <GoldButton onClick={onBack}>BACK TO TODAY</GoldButton>
     </div>
+  );
+}
+
+function ArcGauge({
+  value,
+  onChange,
+}: {
+  value: number | null;
+  onChange: (n: number) => void;
+}) {
+  const W = 320;
+  const H = 180;
+  const cx = W / 2;
+  const cy = 160;
+  const r = 130;
+  const svgRef = useRef<SVGSVGElement | null>(null);
+
+  const v = value ?? 1;
+  const color =
+    v <= 3 ? DANGER : v <= 6 ? AMBER : GOLD;
+
+  // angle: value 1 -> 180deg (left), value 10 -> 0deg (right)
+  const valueToAngle = (n: number) =>
+    Math.PI - ((n - 1) / 9) * Math.PI;
+  const angle = valueToAngle(v);
+  const dotX = cx + r * Math.cos(angle);
+  const dotY = cy - r * Math.sin(angle);
+
+  // background arc path (semicircle)
+  const bgPath = `M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`;
+  // filled arc from left (180deg) to current angle
+  const startX = cx - r;
+  const startY = cy;
+  const largeArc = 0;
+  const fillPath =
+    value == null
+      ? ""
+      : `M ${startX} ${startY} A ${r} ${r} 0 ${largeArc} 1 ${dotX} ${dotY}`;
+
+  const pointFromEvent = (clientX: number, clientY: number) => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const rect = svg.getBoundingClientRect();
+    const x = ((clientX - rect.left) / rect.width) * W;
+    const y = ((clientY - rect.top) / rect.height) * H;
+    const dx = x - cx;
+    const dy = cy - y;
+    let a = Math.atan2(dy, dx);
+    if (a < 0) a = 0;
+    if (a > Math.PI) a = Math.PI;
+    const n = Math.round(((Math.PI - a) / Math.PI) * 9 + 1);
+    const clamped = Math.max(1, Math.min(10, n));
+    onChange(clamped);
+  };
+
+  const [dragging, setDragging] = useState(false);
+
+  return (
+    <div className="mb-8">
+      <svg
+        ref={svgRef}
+        viewBox={`0 0 ${W} ${H}`}
+        style={{ width: "100%", height: "auto", touchAction: "none" }}
+        onPointerDown={(e) => {
+          (e.target as Element).setPointerCapture?.(e.pointerId);
+          setDragging(true);
+          pointFromEvent(e.clientX, e.clientY);
+        }}
+        onPointerMove={(e) => {
+          if (!dragging) return;
+          pointFromEvent(e.clientX, e.clientY);
+        }}
+        onPointerUp={() => setDragging(false)}
+        onPointerCancel={() => setDragging(false)}
+      >
+        <path
+          d={bgPath}
+          fill="none"
+          stroke="rgba(255,255,255,0.08)"
+          strokeWidth={10}
+          strokeLinecap="round"
+        />
+        {value != null && (
+          <path
+            d={fillPath}
+            fill="none"
+            stroke={color}
+            strokeWidth={10}
+            strokeLinecap="round"
+          />
+        )}
+        {value != null && (
+          <circle
+            cx={dotX}
+            cy={dotY}
+            r={10}
+            fill={color}
+            stroke="#0F2F3A"
+            strokeWidth={3}
+            style={{ cursor: "grab" }}
+          />
+        )}
+        <text
+          x={cx - r}
+          y={cy + 22}
+          fill={DANGER}
+          fontFamily={MONO}
+          fontSize={9}
+          letterSpacing="1.5"
+          textAnchor="start"
+        >
+          DYSREGULATED
+        </text>
+        <text
+          x={cx + r}
+          y={cy + 22}
+          fill={GOLD}
+          fontFamily={MONO}
+          fontSize={9}
+          letterSpacing="1.5"
+          textAnchor="end"
+        >
+          REGULATED
+        </text>
+      </svg>
+      <div
+        className="text-center"
+        style={{
+          fontFamily: MONO,
+          fontSize: 64,
+          fontWeight: 700,
+          lineHeight: 1,
+          color: value == null ? "rgba(244,197,66,0.2)" : color,
+          marginTop: -10,
+        }}
+      >
+        {value ?? "—"}
+      </div>
+      <div
+        className="text-center mt-3"
+        style={{
+          fontFamily: MONO,
+          fontSize: 10,
+          letterSpacing: "2px",
+          color: MUTED,
+        }}
+      >
+        DRAG OR TAP THE ARC
+      </div>
+    </div>
+  );
+}
+
+function Celebration() {
+  const particles = Array.from({ length: 14 });
+  return (
+    <>
+      <div className="rd-flash" />
+      <div className="rd-burst">
+        {particles.map((_, i) => {
+          const angle = (i / particles.length) * Math.PI * 2;
+          const dist = 140 + Math.random() * 80;
+          const tx = Math.cos(angle) * dist;
+          const ty = Math.sin(angle) * dist;
+          return (
+            <span
+              key={i}
+              className="rd-particle"
+              style={
+                {
+                  "--tx": `${tx}px`,
+                  "--ty": `${ty}px`,
+                } as React.CSSProperties
+              }
+            />
+          );
+        })}
+      </div>
+    </>
   );
 }

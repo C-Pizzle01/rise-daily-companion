@@ -336,6 +336,31 @@ function TodayPage() {
           >
             CHECK IN TODAY →
           </button>
+          <div
+            className="text-center"
+            style={{
+              fontFamily: MONO,
+              fontSize: 10,
+              letterSpacing: "2px",
+              color: MUTED,
+              marginTop: 12,
+            }}
+          >
+            <span
+              style={{
+                display: "inline-block",
+                width: 6,
+                height: 6,
+                borderRadius: 999,
+                backgroundColor: GOLD,
+                opacity: 0.6,
+                marginRight: 8,
+                verticalAlign: "middle",
+                animation: "rd-pulse-glow 2s ease-in-out infinite",
+              }}
+            />
+            LOADING COHORT DATA...
+          </div>
         </div>
 
         <p
