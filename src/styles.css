@@ -334,38 +334,15 @@ body::before {
   50%      { transform: scale(1.15); opacity: 0.12; }
 }
 .rd-breathe {
-  animation: rd-breathe 8s ease-in-out infinite;
+  animation: rd-breathe 4s ease-in-out infinite;
   transform-origin: center;
 }
 
-/* Check-in celebration flash */
-@keyframes rd-flash {
-  0%   { opacity: 0; }
-  30%  { opacity: 1; }
-  100% { opacity: 0; }
+/* Check-in submission fade */
+@keyframes rd-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
-.rd-flash {
-  position: fixed; inset: 0; z-index: 100;
-  background-color: rgba(244,197,66,0.15);
-  pointer-events: none;
-  animation: rd-flash 0.4s ease-out forwards;
-}
-
-/* Particle burst */
-@keyframes rd-particle {
-  0%   { transform: translate(0,0) scale(1); opacity: 1; }
-  100% { transform: translate(var(--tx), var(--ty)) scale(0.2); opacity: 0; }
-}
-.rd-particle {
-  position: absolute;
-  top: 50%; left: 50%;
-  width: 6px; height: 6px;
-  border-radius: 999px;
-  background-color: #F4C542;
-  box-shadow: 0 0 6px rgba(244,197,66,0.7);
-  animation: rd-particle 0.6s ease-out forwards;
-}
-.rd-burst {
-  position: fixed; inset: 0; z-index: 101;
-  pointer-events: none;
+.rd-fade-in {
+  animation: rd-fade-in 300ms ease-out both;
 }
