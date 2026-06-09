@@ -706,32 +706,3 @@ function ArcGauge({
     </div>
   );
 }
-
-function Celebration() {
-  const particles = Array.from({ length: 14 });
-  return (
-    <>
-      <div className="rd-flash" />
-      <div className="rd-burst">
-        {particles.map((_, i) => {
-          const angle = (i / particles.length) * Math.PI * 2;
-          const dist = 140 + Math.random() * 80;
-          const tx = Math.cos(angle) * dist;
-          const ty = Math.sin(angle) * dist;
-          return (
-            <span
-              key={i}
-              className="rd-particle"
-              style={
-                {
-                  "--tx": `${tx}px`,
-                  "--ty": `${ty}px`,
-                } as React.CSSProperties
-              }
-            />
-          );
-        })}
-      </div>
-    </>
-  );
-}
