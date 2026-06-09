@@ -245,7 +245,7 @@ function Screen1({
 
       <button
         onClick={() => onSelect(true)}
-        className="w-full text-left p-5 mb-3"
+        className="w-full text-left p-5 mb-3 relative"
         style={{
           backgroundColor:
             q1 === true ? "rgba(244,197,66,0.12)" : "transparent",
