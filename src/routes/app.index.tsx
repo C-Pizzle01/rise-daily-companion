@@ -251,6 +251,36 @@ function TodayPage() {
           <DayRing day={currentDay} />
         </div>
 
+        <div className="flex flex-col items-center gap-2 mb-6">
+          <span
+            style={{
+              fontFamily: MONO,
+              fontSize: 11,
+              letterSpacing: "2px",
+              color: GOLD,
+              border: `1px solid ${GOLD}`,
+              padding: "4px 10px",
+              borderRadius: 3,
+            }}
+          >
+            // {rankFromDay(currentDay)} //
+          </span>
+          {currentDay >= 7 && currentDay <= 14 && (
+            <div
+              style={{
+                fontFamily: MONO,
+                fontSize: 11,
+                color: GOLD,
+                textAlign: "center",
+              }}
+            >
+              This is where operators are made.
+            </div>
+          )}
+        </div>
+
+        <SentinelUnlock currentDay={currentDay} />
+
         <div
           className="rd-radial-gold rd-surface-grad p-6"
           style={{
