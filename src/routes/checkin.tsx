@@ -354,43 +354,7 @@ function Screen2({
         1 = completely dysregulated &nbsp;&nbsp; 10 = fully regulated
       </p>
 
-      <div
-        className="text-center"
-        style={{
-          fontFamily: SERIF,
-          fontSize: 80,
-          lineHeight: 1,
-          color: q2 ? GOLD : "rgba(244,197,66,0.15)",
-          minHeight: 96,
-          marginBottom: 24,
-        }}
-      >
-        {q2 ?? "—"}
-      </div>
-
-      <div className="grid grid-cols-5 gap-2 mb-8">
-        {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
-          <button
-            key={n}
-            onClick={() => onSelect(n)}
-            style={{
-              padding: "14px 0",
-              backgroundColor: q2 === n ? "rgba(244,197,66,0.12)" : SURFACE,
-              border:
-                q2 === n
-                  ? `1px solid ${GOLD}`
-                  : "1px solid rgba(255,255,255,0.06)",
-              color: q2 === n ? GOLD : TEXT,
-              fontFamily: MONO,
-              fontSize: 14,
-              borderRadius: 3,
-              cursor: "pointer",
-            }}
-          >
-            {n}
-          </button>
-        ))}
-      </div>
+      <ArcGauge value={q2} onChange={onSelect} />
 
       {q2 !== null && (
         <GoldButton onClick={onContinue}>CONTINUE →</GoldButton>
