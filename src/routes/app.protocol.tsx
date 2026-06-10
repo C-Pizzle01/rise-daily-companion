@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Lock } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/app/protocol")({
   component: ProtocolPage,
@@ -44,7 +47,20 @@ const DAYS: { title: string; description: string }[] = [
 ];
 
 function ProtocolPage() {
-  const currentDay = 1;
+  const { user } = useAuth();
+  const [currentDay, setCurrentDay] = useState<number>(1);
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const { data: prog } = await supabase
+        .from("user_progress")
+        .select("current_day")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (prog && prog.current_day != null) setCurrentDay(prog.current_day);
+    })();
+  }, [user]);
 
   return (
     <div className="px-5 pt-6 pb-8 max-w-xl mx-auto">
